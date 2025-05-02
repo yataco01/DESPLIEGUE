@@ -29,8 +29,8 @@ jobs:
           # Instalar GitGuardian CLI (ggshield)
           pip install ggshield
 
-          # Establecer la clave API de GitGuardian como variable de entorno
-          export GG_API_KEY="${{ secrets.GG_API_KEY }}"
+          # Establecer el Personal Access Token (PAT) como variable de entorno
+          export GG_API_KEY="${{ secrets.GG_TOKEN }}"
 
           # Verificar que la variable de entorno esté correctamente configurada
           echo $GG_API_KEY
@@ -51,5 +51,6 @@ jobs:
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
+
 
 
