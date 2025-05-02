@@ -1,48 +1,51 @@
 name: Seguridad CI
 
-# Desencadenar el pipeline cuando hay un 'push' a la rama principal
 on:
   push:
     branches: 
-      - main   # Este es el nombre de la rama, ajusta si usas otra como 'master'
+      - main  # Asegúrate de que la rama sea la correcta
 
 jobs:
   seguridad:
-    runs-on: ubuntu-latest   # Esto ejecuta el pipeline en una máquina virtual de Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Clonar el repositorio
-        uses: actions/checkout@v3  # Clona tu repositorio para poder usarlo en el pipeline
+        uses: actions/checkout@v3
 
-      - name: Instalar Trivy (para escaneo de vulnerabilidades en dependencias y contenedores)
+      - name: Instalar Trivy
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-      - name: Ejecutar Trivy (Escanear dependencias y archivos de proyecto)
-        run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .  # Escanea el código fuente y dependencias por vulnerabilidades críticas
+      - name: Ejecutar Trivy (Escanear dependencias)
+        run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .
 
-      - name: Instalar GitGuardian CLI (para detectar secretos en el código)
+      - name: Instalar GitGuardian CLI (ggshield)
         run: |
-          # Instalar pip (si no está instalado)
+          # Instalar pip si no está instalado
           sudo apt-get update
-          sudo apt-get install -y python3-pip  # Asegura que pip esté instalado
+          sudo apt-get install -y python3-pip
 
-          # Instalar GitGuardian CLI (ggshield)
+          # Instalar GitGuardian CLI
           pip install ggshield
 
-          # Ejecutar el escaneo de secretos con GitGuardian CLI (ggshield)
-          ggshield secret scan path .  # Escanea el código fuente para detectar secretos expuestos
+          # Autenticar con GitGuardian usando la API Key almacenada como secreto
+          echo "${{ secrets.GG_API_KEY }}" | ggshield auth login --api-key
 
-      - name: Instalar OWASP ZAP (para escaneo dinámico de seguridad)
+          # Ejecutar el escaneo de secretos con GitGuardian CLI
+          ggshield secret scan path .
+
+      - name: Instalar OWASP ZAP
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.0/ZAP_2.11.0_Linux.tar.gz
           tar -xvzf ZAP_2.11.0_Linux.tar.gz
           cd ZAP_2.11.0_Linux
-          ./zap.sh -daemon -port 8080  # Corre ZAP en modo demonio (sin interfaz gráfica)
+          ./zap.sh -daemon -port 8080
 
-      - name: Ejecutar OWASP ZAP (Realizar pruebas de seguridad dinámicas)
+      - name: Ejecutar OWASP ZAP
         run: |
-          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3  # Realiza un escaneo rápido de seguridad con ZAP
+          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
+
