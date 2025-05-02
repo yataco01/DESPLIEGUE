@@ -63,7 +63,7 @@ jobs:
         if: always()
 
       - name: Crear issues en GitHub para vulnerabilidades críticas
-        if: failure() || steps.trivy.outputs.TRIVY_COUNT > 0 || steps.trivy_image.outputs.TRIVY_IMAGE_COUNT > 0 || steps.zap.outputs.ZAP_COUNT > 0 || steps.trufflehog.outputs.TRUFFLEHOG_COUNT > 0
+        if: always() && (steps.metrics.outputs.TRIVY_COUNT != '0' || steps.metrics.outputs.TRIVY_IMAGE_COUNT != '0' || steps.metrics.outputs.ZAP_COUNT != '0' || steps.metrics.outputs.TRUFFLEHOG_COUNT != '0' || failure())
         uses: actions/github-script@v6
         with:
           script: |
