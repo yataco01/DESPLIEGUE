@@ -20,21 +20,22 @@ jobs:
       - name: Ejecutar Trivy (Escanear dependencias)
         run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .
 
-      - name: Instalar ggshield
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip install ggshield
 
-      - name: Instalar TruffleHog
+      - name: Install TruffleHog
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
+          python -m pip install --upgrade pip
           pip install truffleHog
 
-      - name: Ejecutar TruffleHog para escanear secretos
+      - name: Run TruffleHog to scan for secrets
         run: |
           trufflehog --json --max_depth 50 --since_commit HEAD .
+
+      - name: Upload the results as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: trufflehog-results
+          path: trufflehog-results.json
+
           
       - name: Instalar OWASP ZAP
         run: |
