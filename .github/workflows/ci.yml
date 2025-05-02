@@ -1,0 +1,43 @@
+name: Seguridad CI
+
+# Desencadenar el pipeline cuando hay un 'push' a la rama principal
+on:
+  push:
+    branches: 
+      - main   # Este es el nombre de la rama, ajusta si usas otra como 'master'
+
+jobs:
+  seguridad:
+    runs-on: ubuntu-latest   # Esto ejecuta el pipeline en una máquina virtual de Ubuntu
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3  # Clona tu repositorio para poder usarlo en el pipeline
+
+      - name: Instalar Trivy (para escaneo de vulnerabilidades en dependencias y contenedores)
+        run: |
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.2_Linux-64bit.deb
+          sudo dpkg -i trivy_0.50.2_Linux-64bit.deb
+
+      - name: Ejecutar Trivy (Escanear dependencias y archivos de proyecto)
+        run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .  # Escanea el código fuente y dependencias por vulnerabilidades críticas
+
+      - name: Instalar GitGuardian CLI (para detectar secretos en el código)
+        run: |
+          pip install ggscc  # Instalar GitGuardian CLI
+          ggscc scan path .  # Escanea el código fuente para detectar secretos expuestos
+
+      - name: Instalar OWASP ZAP (para escaneo dinámico de seguridad)
+        run: |
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.0/ZAP_2.11.0_Linux.tar.gz
+          tar -xvzf ZAP_2.11.0_Linux.tar.gz
+          cd ZAP_2.11.0_Linux
+          ./zap.sh -daemon -port 8080  # Corre ZAP en modo demonio (sin interfaz gráfica)
+
+      - name: Ejecutar OWASP ZAP (Realizar pruebas de seguridad dinámicas)
+        run: |
+          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3  # Realiza un escaneo rápido de seguridad con ZAP
+
+      - name: Resultado del pipeline
+        run: echo "El pipeline de seguridad ha terminado correctamente"
