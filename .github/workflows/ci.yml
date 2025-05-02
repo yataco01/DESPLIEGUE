@@ -16,9 +16,7 @@ jobs:
 
       - name: Instalar Trivy (para escaneo de vulnerabilidades en dependencias y contenedores)
         run: |
-          sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.2_Linux-64bit.deb
-          sudo dpkg -i trivy_0.50.2_Linux-64bit.deb
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Ejecutar Trivy (Escanear dependencias y archivos de proyecto)
         run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .  # Escanea el código fuente y dependencias por vulnerabilidades críticas
@@ -37,7 +35,4 @@ jobs:
 
       - name: Ejecutar OWASP ZAP (Realizar pruebas de seguridad dinámicas)
         run: |
-          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3  # Realiza un escaneo rápido de seguridad con ZAP
-
-      - name: Resultado del pipeline
-        run: echo "El pipeline de seguridad ha terminado correctamente"
+          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3  # Realiza un escaneo rápido d
