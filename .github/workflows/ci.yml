@@ -27,11 +27,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-pip  # Asegura que pip esté instalado
 
-          # Instalar GitGuardian CLI
-          pip install --upgrade gitguardian
+          # Instalar GitGuardian CLI (ggshield)
+          pip install ggshield
 
-          # Ejecutar el escaneo de secretos con GitGuardian CLI
-          ggscc scan path .  # Escanea el código fuente para detectar secretos expuestos
+          # Ejecutar el escaneo de secretos con GitGuardian CLI (ggshield)
+          ggshield scan path .  # Escanea el código fuente para detectar secretos expuestos
 
       - name: Instalar OWASP ZAP (para escaneo dinámico de seguridad)
         run: |
