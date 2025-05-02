@@ -32,9 +32,9 @@ jobs:
        # Download and extract OWASP ZAP
       - name: Download and extract OWASP ZAP
         run: |
-          wget https://github.com/zaproxy/zaproxy/releases/tag/w2025-04-30
-          tar -xvzf ZAP_2.11.0_Linux.tar.gz
-          cd ZAP_2.11.0
+          wget https://github.com/zaproxy/zaproxy/releases/download/w2025-04-30/ZAP_WEEKLY_D-2025-04-30.zip
+          tar -xvzf ZAP_WEEKLY_D-2025-04-30.zip
+          cd ZAP_WEEKLY_D-2025-04-30
 
       # Run OWASP ZAP with the selected parameters
       - name: Run OWASP ZAP
