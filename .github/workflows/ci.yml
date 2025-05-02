@@ -23,7 +23,14 @@ jobs:
 
       - name: Instalar GitGuardian CLI (para detectar secretos en el código)
         run: |
-          pip install ggscc  # Instalar GitGuardian CLI
+          # Instalar pip (si no está instalado)
+          sudo apt-get update
+          sudo apt-get install -y python3-pip  # Asegura que pip esté instalado
+
+          # Instalar GitGuardian CLI
+          pip install --upgrade gitguardian
+
+          # Ejecutar el escaneo de secretos con GitGuardian CLI
           ggscc scan path .  # Escanea el código fuente para detectar secretos expuestos
 
       - name: Instalar OWASP ZAP (para escaneo dinámico de seguridad)
@@ -35,4 +42,7 @@ jobs:
 
       - name: Ejecutar OWASP ZAP (Realizar pruebas de seguridad dinámicas)
         run: |
-          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3  # Realiza un escaneo rápido d
+          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3  # Realiza un escaneo rápido de seguridad con ZAP
+
+      - name: Resultado del pipeline
+        run: echo "El pipeline de seguridad ha terminado correctamente"
