@@ -29,12 +29,11 @@ jobs:
           # Instalar GitGuardian CLI (ggshield)
           pip install ggshield
 
-          # Crear archivo de configuración .ggshield con la API Key directamente
-          echo "[auth]" > ~/.ggshield
-          echo "api_key = ${{ secrets.GG_API_KEY }}" >> ~/.ggshield
+          # Establecer la clave API de GitGuardian como variable de entorno
+          export GG_API_KEY="${{ secrets.GG_API_KEY }}"
 
-          # Verificar que el archivo .ggshield esté correctamente configurado
-          cat ~/.ggshield
+          # Verificar que la variable de entorno esté correctamente configurada
+          echo $GG_API_KEY
 
           # Ejecutar el escaneo de secretos con GitGuardian CLI
           ggshield secret scan path .
