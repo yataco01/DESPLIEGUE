@@ -30,14 +30,30 @@ jobs:
 
       - name: Generar métricas de vulnerabilidades (OWASP SAMM)
         run: |
-          # Contar vulnerabilidades críticas de Trivy
-          TRIVY_COUNT=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy_report.json)
+          # Verificar que los archivos existen
+          ls -la trivy_report.json trivy_image_report.json zap_report.json trufflehog_report.json || echo "Advertencia: Algunos archivos de reporte no existen"
+          
+          # Contar vulnerabilidades críticas de Trivy (dependencias)
+          TRIVY_COUNT=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy_report.json || echo 0)
           echo "Vulnerabilidades críticas en dependencias: $TRIVY_COUNT"
+          
+          # Contar vulnerabilidades críticas de Trivy (imagen)
+          TRIVY_IMAGE_COUNT=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length' trivy_image_report.json || echo 0)
+          echo "Vulnerabilidades críticas en imagen: $TRIVY_IMAGE_COUNT"
+          
           # Contar vulnerabilidades de ZAP
-          ZAP_COUNT=$(jq '[.site[].alerts[] | select(.risk == "High" or .risk == "Medium")] | length' zap_report.json)
+          ZAP_COUNT=$(jq '[.site[].alerts[]? | select(.risk == "High" or .risk == "Medium")] | length' zap_report.json || echo 0)
           echo "Vulnerabilidades en la aplicación web: $ZAP_COUNT"
-          # Registrar métricas en un archivo
-          echo "{\"trivy_vulns\": $TRIVY_COUNT, \"zap_vulns\": $ZAP_COUNT}" > metrics.json
+          
+          # Contar secretos de TruffleHog
+          TRUFFLEHOG_COUNT=$(jq 'length' trufflehog_report.json || echo 0)
+          echo "Secretos detectados: $TRUFFLEHOG_COUNT"
+          
+          # Generar métricas en JSON
+          echo "{\"trivy_vulns\": $TRIVY_COUNT, \"trivy_image_vulns\": $TRIVY_IMAGE_COUNT, \"zap_vulns\": $ZAP_COUNT, \"trufflehog_secrets\": $TRUFFLEHOG_COUNT}" > metrics.json
+          
+          # Mostrar métricas
+          cat metrics.json
 
       - name: Subir métricas como artefacto
         uses: actions/upload-artifact@v4
@@ -47,24 +63,37 @@ jobs:
         if: always()
 
       - name: Crear issues en GitHub para vulnerabilidades críticas
-        if: failure()  # Ejecutar solo si el pipeline falla (vulnerabilidades críticas o secretos detectados)
+        if: failure() || steps.trivy.outputs.TRIVY_COUNT > 0 || steps.trivy_image.outputs.TRIVY_IMAGE_COUNT > 0 || steps.zap.outputs.ZAP_COUNT > 0 || steps.trufflehog.outputs.TRUFFLEHOG_COUNT > 0
         uses: actions/github-script@v6
         with:
           script: |
             const fs = require('fs');
             const trivyReport = JSON.parse(fs.readFileSync('trivy_report.json'));
+            const trivyImageReport = JSON.parse(fs.readFileSync('trivy_image_report.json'));
             const zapReport = JSON.parse(fs.readFileSync('zap_report.json'));
             const trufflehogReport = JSON.parse(fs.readFileSync('trufflehog_report.json'));
 
             let issues = [];
 
-            // Vulnerabilidades críticas de Trivy
+            // Vulnerabilidades críticas de Trivy (dependencias)
             trivyReport.Results?.forEach(result => {
               result.Vulnerabilities?.forEach(vuln => {
                 if (vuln.Severity === 'CRITICAL' || vuln.Severity === 'HIGH') {
                   issues.push({
                     title: `Vulnerabilidad crítica detectada: ${vuln.VulnerabilityID}`,
                     body: `**CVE**: ${vuln.VulnerabilityID}\n**Severidad**: ${vuln.Severity}\n**Paquete**: ${vuln.PkgName}\n**Descripción**: ${vuln.Description}\nAcción requerida: Actualizar o mitigar.`
+                  });
+                }
+              });
+            });
+
+            // Vulnerabilidades críticas de Trivy (imagen)
+            trivyImageReport.Results?.forEach(result => {
+              result.Vulnerabilities?.forEach(vuln => {
+                if (vuln.Severity === 'CRITICAL' || vuln.Severity === 'HIGH') {
+                  issues.push({
+                    title: `Vulnerabilidad crítica en imagen: ${vuln.VulnerabilityID}`,
+                    body: `**CVE**: ${vuln.VulnerabilityID}\n**Severidad**: ${vuln.Severity}\n**Paquete**: ${vuln.PkgName}\n**Descripción**: ${vuln.Description}\nAcción requerida: Actualizar imagen.`
                   });
                 }
               });
@@ -102,4 +131,3 @@ jobs:
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
-
