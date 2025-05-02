@@ -40,7 +40,7 @@ jobs:
           echo "{\"trivy_vulns\": $TRIVY_COUNT, \"zap_vulns\": $ZAP_COUNT}" > metrics.json
 
       - name: Subir métricas como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-metrics
           path: metrics.json
