@@ -26,14 +26,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-pip
 
-          # Instalar GitGuardian CLI
+          # Instalar GitGuardian CLI (ggshield)
           pip install ggshield
 
-          # Crear archivo de configuración .ggshield y agregar la API Key
+          # Crear archivo de configuración .ggshield con la API Key de GitGuardian
           echo -e "[auth]\napi_key = ${{ secrets.GG_API_KEY }}" > ~/.ggshield
 
           # Ejecutar el escaneo de secretos con GitGuardian CLI
           ggshield secret scan path .
+
 
       - name: Instalar OWASP ZAP
         run: |
