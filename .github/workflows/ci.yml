@@ -29,16 +29,29 @@ jobs:
         run: |
           trufflehog --json --max_depth 50 --since_commit HEAD .
           
-      - name: Instalar OWASP ZAP
+      - name: Download and extract OWASP ZAP
         run: |
-          wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.0/ZAP_2.11.0_Linux.tar.gz
-          tar -xvzf ZAP_2.11.0_Linux.tar.gz
-          cd ZAP_2.11.0_Linux
-          ./zap.sh -daemon -port 3000
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.1/ZAP_2.11.1_Linux.tar.gz
+          tar -xvzf ZAP_2.11.1_Linux.tar.gz
+          cd ZAP_2.11.1
 
-      - name: Ejecutar OWASP ZAP
+      # Run OWASP ZAP with the selected parameters
+      - name: Run OWASP ZAP
         run: |
-          curl -fsSL https://github.com/zaproxy/zaproxy/raw/master/scripts/quickstart.py | python3
+          cd ZAP_2.11.1
+          ./zap.sh -daemon -port 8080 # Puedes cambiar parámetros según tus necesidades
+
+      # Optional: You can add here a custom scan with ZAP API (as an example)
+      - name: Perform ZAP Scan
+        run: |
+          curl -X GET "http://localhost:8080/JSON/ascan/action/scan?url=http://example.com&maxDepth=5"
+
+      # Optional: Upload ZAP results as artifact
+      - name: Upload ZAP results
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-scan-results
+          path: ./ZAP_2.11.1/owasp-zap-report.html
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
