@@ -26,18 +26,15 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install ggshield
 
-      - name: Verificar el token de GitGuardian
+      - name: Instalar TruffleHog
         run: |
-          echo "Revisando si la variable de entorno GG_API_KEY está configurada correctamente"
-          echo $GG_API_KEY
-        env:
-          GG_API_KEY: ${{ secrets.GG_API_KEY }}
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip install truffleHog
 
-      - name: Escanear secretos con ggshield
+      - name: Ejecutar TruffleHog para escanear secretos
         run: |
-          ggshield secret scan path .
-        env:
-          GG_API_KEY: ${{ secrets.GG_API_KEY }}
+          trufflehog --json --max_depth 50 --since_commit HEAD .
           
       - name: Instalar OWASP ZAP
         run: |
