@@ -29,20 +29,20 @@ jobs:
         run: |
           trufflehog --json --max_depth 50 --since_commit HEAD .
           
-       # Download and extract OWASP ZAP
-      - name: Download and extract OWASP ZAP
+      # Download and extract OWASP ZAP weekly build
+      - name: Download OWASP ZAP Weekly Build
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/w2025-04-30/ZAP_WEEKLY_D-2025-04-30.zip
-          tar -xvzf ZAP_WEEKLY_D-2025-04-30.zip
+          unzip ZAP_WEEKLY_D-2025-04-30.zip
           cd ZAP_WEEKLY_D-2025-04-30
 
-      # Run OWASP ZAP with the selected parameters
+      # Run OWASP ZAP in daemon mode
       - name: Run OWASP ZAP
         run: |
-          cd ZAP_2.11.0
-          ./zap.sh -daemon -port 8080 # Puedes cambiar parámetros según tus necesidades
+          cd ZAP_WEEKLY_D-2025-04-30
+          ./zap.sh -daemon -port 8080
 
-      # Optional: You can add here a custom scan with ZAP API (as an example)
+      # Perform security scan (example scanning localhost, replace URL as needed)
       - name: Perform ZAP Scan
         run: |
           curl -X GET "http://localhost:8080/JSON/ascan/action/scan?url=http://example.com&maxDepth=5"
