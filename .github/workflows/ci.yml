@@ -20,18 +20,19 @@ jobs:
       - name: Ejecutar Trivy (Escanear dependencias)
         run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .
 
-      - name: Instalar dependencias de seguridad
+      - name: Instalar GitGuardian CLI
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip curl
+          sudo apt-get install -y python3-pip
           pip install ggshield
 
-      - name: Escanear secretos con GitGuardian (ggshield)
+      - name: Escanear secretos con GitGuardian
         env:
-          GG_API_KEY: ${{ secrets.GG_TOKEN }}
+          GG_API_KEY: ${{ secrets.GG_API_KEY }}
         run: |
+          echo "🔐 Ejecutando escaneo con ggshield..."
           ggshield secret scan path .
-
+          
       - name: Instalar OWASP ZAP
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.0/ZAP_2.11.0_Linux.tar.gz
