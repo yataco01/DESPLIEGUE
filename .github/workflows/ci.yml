@@ -29,12 +29,23 @@ jobs:
         run: |
           trufflehog --json --max_depth 50 --since_commit HEAD .
           
-      # Download and extract OWASP ZAP weekly build
+     # Download and extract OWASP ZAP weekly build
       - name: Download OWASP ZAP Weekly Build
         run: |
           wget https://github.com/zaproxy/zaproxy/releases/download/w2025-04-30/ZAP_WEEKLY_D-2025-04-30.zip
+          ls -alh
           unzip ZAP_WEEKLY_D-2025-04-30.zip
-          cd ZAP_WEEKLY_D-2025-04-30
+          ls -alh
+
+      # Check if the directory exists
+      - name: Check if ZAP directory exists
+        run: |
+          if [ -d "ZAP_WEEKLY_D-2025-04-30" ]; then
+            echo "Directory exists"
+          else
+            echo "Directory does not exist"
+            exit 1
+          fi
 
       # Run OWASP ZAP in daemon mode
       - name: Run OWASP ZAP
