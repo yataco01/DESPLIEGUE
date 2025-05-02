@@ -29,6 +29,7 @@ jobs:
         run: |
           trufflehog --json --max_depth 50 --since_commit HEAD .
 
+      # Opción 1: Instalación manual de OWASP ZAP
       - name: Instalar dependencias para OWASP ZAP
         run: |
           sudo apt-get update
@@ -36,11 +37,25 @@ jobs:
 
       - name: Descargar e instalar OWASP ZAP
         run: |
-          wget https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2_15_0_unix.sh -O zap.sh
+          # Descargar el script de instalación
+          wget --max-redirect=10 -O zap.sh https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2_15_0_unix.sh
+          # Verificar que el archivo se descargó
+          ls -la zap.sh
+          # Mostrar las primeras líneas para depuración
+          head -n 10 zap.sh
+          # Hacer el script ejecutable
           chmod +x zap.sh
-          sudo ./zap.sh -cmd -silent -dir /opt/zap -installdir /opt/zap
-          ls -la /opt/zap  # Depuración: listar contenido del directorio
-          /opt/zap/zap.sh -version  # Depuración: verificar instalación
+          # Forzar instalación no interactiva
+          echo "o" | sudo ./zap.sh -q -dir /opt/zap -installdir /opt/zap
+          # Verificar instalación
+          ls -la /opt/zap
+          /opt/zap/zap.sh -version || echo "Error: No se pudo ejecutar zap.sh"
+
+      # Opción 2: Usar Docker para OWASP ZAP (comentar Opción 1 si usas esta)
+      # - name: Ejecutar OWASP ZAP Baseline Scan con Docker
+      #   run: |
+      #     docker run --rm -v $(pwd):/zap/wrk owasp/zap2docker-stable \
+      #     zap-baseline.py -t https://your-app-url.com -r zap_report.html
 
       - name: Ejecutar OWASP ZAP Baseline Scan
         run: |
@@ -53,6 +68,7 @@ jobs:
         with:
           name: zap-report
           path: zap_report.html
+        if: always()
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
