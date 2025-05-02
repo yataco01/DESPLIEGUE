@@ -30,12 +30,12 @@ jobs:
 
       - name: Verificar accesibilidad de la URL
         run: |
-          curl -I https://juice-shop.herokuapp.com
+          curl -I https://3000-yataco01-proyectovulner-go9j86nrzjy.ws-us118.gitpod.io/#/
 
       - name: Ejecutar OWASP ZAP Baseline Scan con Docker
         run: |
           docker run --rm -v $(pwd):/zap/wrk owasp/zap2docker-stable \
-          zap-baseline.py -t https://juice-shop.herokuapp.com -r zap_report.html -m 5 -d -I
+          zap-baseline.py -t https://3000-yataco01-proyectovulner-go9j86nrzjy.ws-us118.gitpod.io/#/ -r zap_report.html -m 5 -d -I
 
       - name: Subir reporte de OWASP ZAP como artefacto
         uses: actions/upload-artifact@v4
