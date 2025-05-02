@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Clonar el repositorio
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar Trivy (para escaneo de vulnerabilidades)
         run: |
@@ -49,7 +49,7 @@ jobs:
           ZAP_QUICKOUT: zap_report.html
 
       - name: Subir reporte de OWASP ZAP como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: zap_report.html
