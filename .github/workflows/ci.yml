@@ -20,22 +20,16 @@ jobs:
       - name: Ejecutar Trivy (Escanear dependencias)
         run: trivy fs --exit-code 0 --severity HIGH,CRITICAL .
 
-      - name: Instalar GitGuardian CLI (ggshield)
+      - name: Instalar dependencias de seguridad
         run: |
-          # Instalar pip si no está instalado
           sudo apt-get update
-          sudo apt-get install -y python3-pip
-
-          # Instalar GitGuardian CLI (ggshield)
+          sudo apt-get install -y python3-pip curl
           pip install ggshield
 
-          # Establecer el Personal Access Token (PAT) como variable de entorno
-          export GG_API_KEY="${{ secrets.GG_TOKEN }}"
-
-          # Verificar que la variable de entorno esté correctamente configurada
-          echo "GitGuardian Token: $GG_API_KEY"
-
-          # Ejecutar el escaneo de secretos con GitGuardian CLI
+      - name: Escanear secretos con GitGuardian (ggshield)
+        env:
+          GG_API_KEY: ${{ secrets.GG_TOKEN }}
+        run: |
           ggshield secret scan path .
 
       - name: Instalar OWASP ZAP
