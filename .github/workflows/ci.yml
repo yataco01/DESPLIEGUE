@@ -28,47 +28,26 @@ jobs:
       - name: Run TruffleHog to scan for secrets
         run: |
           trufflehog --json --max_depth 50 --since_commit HEAD .
-          
-    # Download and extract OWASP ZAP weekly build
-      - name: Download OWASP ZAP Weekly Build
-        run: |
-          wget https://github.com/zaproxy/zaproxy/releases/download/w2025-04-30/ZAP_WEEKLY_D-2025-04-30.zip
-          # List contents of the ZIP file before extracting
-          unzip -l ZAP_WEEKLY_D-2025-04-30.zip
-          unzip ZAP_WEEKLY_D-2025-04-30.zip
-          # List the extracted files
-          ls -R
 
-      # Check if the ZAP directory exists after extraction
-      - name: Check if ZAP directory exists
+      - name: Instalar OWASP ZAP
         run: |
-          # Output the contents of the current directory for debugging purposes
-          echo "Current directory contents:"
-          ls -la
-          if [ -d "ZAP_WEEKLY_D-2025-04-30" ]; then
-            echo "Directory exists"
-          else
-            echo "Directory does not exist"
-            exit 1
-          fi
+          sudo apt-get update
+          sudo apt-get install -y default-jre
+          curl -sL https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2_14_0_unix.sh -o zap.sh
+          chmod +x zap.sh
+          sudo ./zap.sh -cmd -silent -quickinstall
 
-      # Run OWASP ZAP in daemon mode
-      - name: Run OWASP ZAP
+      - name: Ejecutar OWASP ZAP Baseline Scan
         run: |
-          cd ZAP_WEEKLY_D-2025-04-30
-          ./zap.sh -daemon -port 8080
+          /opt/zaproxy/zap.sh -cmd -quickurl https://your-app-url.com -quickout zap_report.html
+        env:
+          ZAP_QUICKOUT: zap_report.html
 
-      # Perform security scan (example scanning localhost, replace URL as needed)
-      - name: Perform ZAP Scan
-        run: |
-          curl -X GET "http://localhost:8080/JSON/ascan/action/scan?url=http://example.com&maxDepth=5"
-
-      # Optional: Upload ZAP results as artifact
-      - name: Upload ZAP results
-        uses: actions/upload-artifact@v4
+      - name: Subir reporte de OWASP ZAP como artefacto
+        uses: actions/upload-artifact@v3
         with:
-          name: zap-scan-results
-          path: ./ZAP_2.11.1/owasp-zap-report.html
+          name: zap-report
+          path: zap_report.html
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
