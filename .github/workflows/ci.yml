@@ -33,7 +33,7 @@ jobs:
           export GG_API_KEY="${{ secrets.GG_TOKEN }}"
 
           # Verificar que la variable de entorno esté correctamente configurada
-          echo $GG_API_KEY
+          echo "GitGuardian Token: $GG_API_KEY"
 
           # Ejecutar el escaneo de secretos con GitGuardian CLI
           ggshield secret scan path .
@@ -51,6 +51,3 @@ jobs:
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
-
-
-
