@@ -48,7 +48,7 @@ jobs:
 
       # Optional: Upload ZAP results as artifact
       - name: Upload ZAP results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zap-scan-results
           path: ./ZAP_2.11.1/owasp-zap-report.html
