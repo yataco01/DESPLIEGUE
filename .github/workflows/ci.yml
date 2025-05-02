@@ -30,7 +30,7 @@ jobs:
           trufflehog --json --max_depth 50 --since_commit HEAD .
 
       - name: Upload the results as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2.2.4
         with:
           name: trufflehog-results
           path: trufflehog-results.json
