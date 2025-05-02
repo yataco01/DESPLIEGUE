@@ -59,7 +59,7 @@ jobs:
 
       - name: Ejecutar OWASP ZAP Baseline Scan
         run: |
-          /opt/zap/zap.sh -cmd -quickurl https://your-app-url.com -quickout zap_report.html
+          /opt/zap/zap.sh -cmd -quickurl https://juice-shop.herokuapp.com/#/ -quickout zap_report.html
         env:
           ZAP_QUICKOUT: zap_report.html
 
