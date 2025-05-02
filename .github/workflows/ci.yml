@@ -2,8 +2,8 @@ name: Seguridad CI
 
 on:
   push:
-    branches: 
-      - main  # Asegúrate de que la rama sea la correcta
+    branches:
+      - main  # Cambia esto si usas otra rama
 
 jobs:
   seguridad:
@@ -13,7 +13,7 @@ jobs:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
 
-      - name: Instalar Trivy
+      - name: Instalar Trivy (para escaneo de vulnerabilidades)
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
@@ -29,12 +29,15 @@ jobs:
           # Instalar GitGuardian CLI (ggshield)
           pip install ggshield
 
-          # Crear archivo de configuración .ggshield con la API Key de GitGuardian
-          echo -e "[auth]\napi_key = ${{ secrets.GG_API_KEY }}" > ~/.ggshield
+          # Crear archivo de configuración .ggshield con la API Key directamente
+          echo "[auth]" > ~/.ggshield
+          echo "api_key = ${{ secrets.GG_API_KEY }}" >> ~/.ggshield
+
+          # Verificar que el archivo .ggshield esté correctamente configurado
+          cat ~/.ggshield
 
           # Ejecutar el escaneo de secretos con GitGuardian CLI
           ggshield secret scan path .
-
 
       - name: Instalar OWASP ZAP
         run: |
