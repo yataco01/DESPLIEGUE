@@ -31,7 +31,7 @@ jobs:
           pip install ggshield
 
           # Ejecutar el escaneo de secretos con GitGuardian CLI (ggshield)
-          ggshield scan path .  # Escanea el código fuente para detectar secretos expuestos
+          ggshield secret scan path .  # Escanea el código fuente para detectar secretos expuestos
 
       - name: Instalar OWASP ZAP (para escaneo dinámico de seguridad)
         run: |
