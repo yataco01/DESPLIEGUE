@@ -29,8 +29,8 @@ jobs:
           # Instalar GitGuardian CLI
           pip install ggshield
 
-          # Autenticar con GitGuardian usando la API Key almacenada como secreto
-          echo "${{ secrets.GG_API_KEY }}" | ggshield auth login --api-key
+          # Crear archivo de configuración .ggshield y agregar la API Key
+          echo -e "[auth]\napi_key = ${{ secrets.GG_API_KEY }}" > ~/.ggshield
 
           # Ejecutar el escaneo de secretos con GitGuardian CLI
           ggshield secret scan path .
@@ -48,4 +48,5 @@ jobs:
 
       - name: Resultado del pipeline
         run: echo "El pipeline de seguridad ha terminado correctamente"
+
 
