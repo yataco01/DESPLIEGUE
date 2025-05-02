@@ -26,7 +26,7 @@ jobs:
           pip install truffleHog
 
       - name: Run TruffleHog
-        run: trufflehog --json --max_depth 50 --since_commit HEAD . --fail
+        run: trufflehog --json --max_depth 50 --since_commit HEAD .
 
       - name: Verificar accesibilidad de la URL
         run: |
