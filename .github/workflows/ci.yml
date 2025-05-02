@@ -26,11 +26,18 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install ggshield
 
-      - name: Escaneo de secretos con ggshield
+      - name: Verificar el token de GitGuardian
+        run: |
+          echo "Revisando si la variable de entorno GG_API_KEY está configurada correctamente"
+          echo $GG_API_KEY
         env:
           GG_API_KEY: ${{ secrets.GG_API_KEY }}
+
+      - name: Escanear secretos con ggshield
         run: |
           ggshield secret scan path .
+        env:
+          GG_API_KEY: ${{ secrets.GG_API_KEY }}
           
       - name: Instalar OWASP ZAP
         run: |
