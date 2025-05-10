@@ -18,12 +18,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Paso 2: Ejecutar el escaneo de SonarCloud
-      - name: Run SonarCloud scan
+      - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v1
         with:
-          entryPoint: "sonar-scanner"
-          args: "-X -Dsonar.login=${{ secrets.SONAR_TOKEN }}"
+          sonar-token: ${{ secrets.SONAR_TOKEN }}  # Se usa el token de SonarCloud desde los secretos de GitHub
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
