@@ -35,12 +35,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openjdk-11-jdk
           
-      # 4. Set JAVA_HOME explicitly to ensure it's picked up
-    - name: Set JAVA_HOME environment variable
-      run: echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
+    - name: Set JAVA_HOME and update PATH
+      run: |
+          echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
+          echo "/usr/lib/jvm/java-11-openjdk-amd64/bin" >> $GITHUB_PATH
 
-      # 5. Verify Java installation (Optional step for debugging)
-    - name: Verify Java Installation
+      # 5. Verificar la instalación de Java
+    - name: Verify Java installation
       run: java -version
       
     - name: Cache SonarCloud dependencies
