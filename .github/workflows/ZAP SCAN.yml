@@ -17,35 +17,46 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Instalar OWASP ZAP usando Snap
-      - name: Install ZAP using Snap
+      # 2. Instalar dependencias necesarias
+      - name: Install dependencies
         run: |
           sudo apt update
+          sudo apt install -y openjdk-11-jre wget unzip python3-pip
+
+      # 3. Instalar zap-cli
+      - name: Install zap-cli
+        run: |
+          pip3 install zap-cli
+
+      # 4. Instalar OWASP ZAP usando Snap
+      - name: Install ZAP using Snap
+        run: |
           sudo apt install -y snapd
           sudo snap install zaproxy --classic
 
-      # 3. Iniciar ZAP en segundo plano
+      # 5. Iniciar ZAP en segundo plano
       - name: Start ZAP in background
         run: |
           nohup zaproxy -daemon -port 8080 &
 
-      # 4. Esperar unos segundos a que ZAP se inicie
+      # 6. Esperar unos segundos a que ZAP se inicie
       - name: Wait for ZAP to start
         run: sleep 10
 
-      # 5. Realizar el análisis de seguridad con ZAP
+      # 7. Realizar el análisis de seguridad con ZAP usando zap-cli
       - name: Run ZAP Scan
         run: |
           zap-cli quick-scan --self-contained --start-url http://localhost/setup.php
 
-      # 6. Obtener los resultados del análisis de ZAP
+      # 8. Obtener los resultados del análisis de ZAP
       - name: Get ZAP Report
         run: |
           zap-cli report -o zap-report.html -f html
           
-      # 7. Subir los resultados del escaneo a GitHub
+      # 9. Subir los resultados del escaneo a GitHub
       - name: Upload ZAP report to GitHub artifacts
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: zap-report.html
+
