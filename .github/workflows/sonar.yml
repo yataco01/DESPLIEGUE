@@ -38,6 +38,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-sonar-cache-
 
+    - name: Install Java in the Docker container
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
+
         # Paso 3: Escaneo con SonarCloud (Sin hacer build)
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@v1
@@ -46,5 +51,5 @@ jobs:
         args: "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        JAVA_HOME: ${{ runner.tool_cache }}/Java_Temurin-Hotspot_jdk/11.0.27-6/x64
+        JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
