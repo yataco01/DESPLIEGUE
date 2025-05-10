@@ -38,15 +38,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-sonar-cache-
 
-    - name: Build with Maven
-      run: mvn clean install
-
+        # Paso 3: Escaneo con SonarCloud (Sin hacer build)
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@v1
       with:
-        organization: 'my-organization'  # Reemplaza con tu organización de SonarCloud
-        projectKey: 'my-project-key'    # Reemplaza con tu clave de proyecto de SonarCloud
+        organization: 'libra´s'  # Reemplaza con tu organización de SonarCloud
+        projectKey: 'Sonar_Token'    # Reemplaza con tu clave de proyecto de SonarCloud
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Agrega tu token en los secretos
-
 
