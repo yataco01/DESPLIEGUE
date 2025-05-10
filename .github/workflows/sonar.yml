@@ -18,10 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v1
-        with:
-          sonar-token: ${{ secrets.SONAR_TOKEN }}  # Se usa el token de SonarCloud desde los secretos de GitHub
+      # Paso 3: Ejecutar el análisis de SonarCloud con depuración
+      - name: Run SonarCloud Scan with Debug
+        run: |
+          sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -X
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
