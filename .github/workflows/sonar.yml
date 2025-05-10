@@ -17,18 +17,19 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v3
 
-      # 2. Configurar SonarQube Scanner (si no es Java)
+      # 2. Instalar SonarQube Scanner (si no es Java)
       - name: Instalar SonarQube Scanner
         run: |
           npm install -g sonar-scanner  # Si tu proyecto usa npm (ajustar según el lenguaje)
 
-      # 3. Ejecutar análisis con SonarQube
+      # 3. Ejecutar análisis con SonarQube (con opción -X para depuración detallada)
       - name: Ejecutar análisis con SonarQube
         run: |
           sonar-scanner \
             -Dsonar.projectKey=mi-proyecto \
             -Dsonar.host.url=http://localhost:9000 \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -X  # Opción para activar el modo de depuración detallado
 
       # 4. Subir artefacto de SonarQube como reporte
       - name: Subir reporte de SonarQube
@@ -36,4 +37,5 @@ jobs:
         with:
           name: sonar-report
           path: sonar-report.json
+
 
