@@ -37,7 +37,7 @@ jobs:
 
       # 5. Subir el reporte de SonarQube como artefacto
       - name: Subir reporte de SonarQube como artefacto
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: sonar-report
           path: target/sonar/report-task.txt
