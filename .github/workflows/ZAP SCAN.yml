@@ -44,7 +44,7 @@ jobs:
           
       # 7. Subir los resultados del escaneo a GitHub (opcional)
       - name: Upload ZAP report to GitHub artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: zap-report.html
