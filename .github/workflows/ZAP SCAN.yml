@@ -1,62 +1,34 @@
-name: OWASP ZAP Scan
+name: OWASP ZAP Baseline Scan
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # Permite ejecutar manualmente desde la UI de GitHub
+  workflow_dispatch:
 
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
-
+    name: Scan Web Application
     steps:
-      # 1. Checkout del código
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # 2. Instalar dependencias necesarias
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y openjdk-11-jre wget unzip python3-pip
-
-      # 3. Instalar zap-cli
-      - name: Install zap-cli
-        run: |
-          pip3 install zap-cli
-
-      # 4. Instalar OWASP ZAP usando Snap
-      - name: Install ZAP using Snap
-        run: |
-          sudo apt install -y snapd
-          sudo snap install zaproxy --classic
-
-      # 5. Iniciar ZAP en segundo plano
-      - name: Start ZAP in background
-        run: |
-          nohup zaproxy -daemon -port 8080 &
-
-      # 6. Esperar unos segundos a que ZAP se inicie
-      - name: Wait for ZAP to start
-        run: sleep 10
-
-      # 7. Realizar el análisis de seguridad con ZAP usando zap-cli
-      - name: Run ZAP Scan
-        run: |
-          zap-cli quick-scan --self-contained --start-url http://localhost/setup.php
-
-      # 8. Obtener los resultados del análisis de ZAP
-      - name: Get ZAP Report
-        run: |
-          zap-cli report -o zap-report.html -f html
-          
-      # 9. Subir los resultados del escaneo a GitHub
-      - name: Upload ZAP report to GitHub artifacts
-        uses: actions/upload-artifact@v4
+      # Clona el repositorio
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          name: zap-report
-          path: zap-report.html
+          ref: main
 
+      # Ejecuta el escaneo baseline de ZAP
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          target: 'http://localhost/setup.php' # Cambia por tu URL objetivo
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          issue_title: 'ZAP Baseline Scan Report'
+          fail_action: false
+          allow_issue_writing: true
+          artifact_name: 'zap_scan'
