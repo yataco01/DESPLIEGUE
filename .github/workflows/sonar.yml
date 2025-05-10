@@ -43,7 +43,7 @@ jobs:
       uses: sonarsource/sonarcloud-github-action@v1
       with:
         organization: 'libra´s'  # Reemplaza con tu organización de SonarCloud
-        projectKey: 'Sonar_Token'    # Reemplaza con tu clave de proyecto de SonarCloud
+        projectKey: '3e26a42aca28dc44ef590410d141a9cea1d0802a'
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Agrega tu token en los secretos
 
