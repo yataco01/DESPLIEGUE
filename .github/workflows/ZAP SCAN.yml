@@ -1,0 +1,50 @@
+name: OWASP ZAP Scan
+
+on:
+  pull_request:
+    branches:
+      - main  # O cualquier otra rama que desees escanear
+  push:
+    branches:
+      - main  # O cualquier otra rama que desees escanear
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout del código
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Instalar OWASP ZAP
+      - name: Install ZAP
+        run: |
+          sudo apt update
+          sudo apt install -y zaproxy
+
+      # 3. Iniciar ZAP en segundo plano
+      - name: Start ZAP in background
+        run: |
+          nohup zaproxy -daemon -port 8080 &
+
+      # 4. Esperar unos segundos a que ZAP se inicie
+      - name: Wait for ZAP to start
+        run: sleep 10
+
+      # 5. Realizar el análisis de seguridad con ZAP
+      - name: Run ZAP Scan
+        run: |
+          zap-cli quick-scan --self-contained --start-url http://localhost/setup.php  # Cambia la URL a la aplicación que deseas analizar
+
+      # 6. Obtener los resultados del análisis de ZAP
+      - name: Get ZAP Report
+        run: |
+          zap-cli report -o zap-report.html -f html  # Genera un reporte en formato HTML
+          
+      # 7. Subir los resultados del escaneo a GitHub (opcional)
+      - name: Upload ZAP report to GitHub artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: zap-report.html
