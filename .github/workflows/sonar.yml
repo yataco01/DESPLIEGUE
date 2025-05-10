@@ -27,7 +27,7 @@ jobs:
         run: |
           sonar-scanner \
             -Dsonar.projectKey=mi-proyecto \
-            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.host.url=http://localhost:9000/ \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -X  # Opción para activar el modo de depuración detallado
 
