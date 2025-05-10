@@ -23,7 +23,7 @@ jobs:
         run: |
           docker run -d --name webapp -p 8080:80 tu-usuario/tu-imagen:tag
           sleep 10 # Espera a que el contenedor esté listo
-        env:
+          env:
           # Opcional: Añade variables de entorno si tu contenedor las necesita
           # ENV_VAR_NAME: ${{ secrets.ENV_VAR_NAME }}
 
