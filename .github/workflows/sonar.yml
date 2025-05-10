@@ -42,8 +42,8 @@ jobs:
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@v1
       with:
-        organization: 'libra´s'  # Reemplaza con tu organización de SonarCloud
-        projectKey: '3e26a42aca28dc44ef590410d141a9cea1d0802a'
+        entryPoint: "sonar-scanner"
+        args: "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Agrega tu token en los secretos
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
