@@ -30,6 +30,19 @@ jobs:
         overwrite-settings: true
         job-status: 'success'
 
+    - name: Install Java 11 (if not already installed)
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk
+          
+      # 4. Set JAVA_HOME explicitly to ensure it's picked up
+    - name: Set JAVA_HOME environment variable
+      run: echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
+
+      # 5. Verify Java installation (Optional step for debugging)
+    - name: Verify Java Installation
+      run: java -version
+      
     - name: Cache SonarCloud dependencies
       uses: actions/cache@v3  # Usamos la versión más reciente de actions/cache
       with:
@@ -37,11 +50,6 @@ jobs:
         key: ${{ runner.os }}-sonar-cache-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-sonar-cache-
-
-    - name: Install Java in the Docker container
-      run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk
 
         # Paso 3: Escaneo con SonarCloud (Sin hacer build)
     - name: SonarCloud Scan
