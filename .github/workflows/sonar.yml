@@ -1,64 +1,30 @@
-name: SonarCloud Analysis
+name: SonarCloud Scan
 
 on:
   push:
     branches:
-      - main
+      - main  # O la rama que quieres escanear
   pull_request:
     branches:
-      - main
+      - main  # O la rama de destino para los PRs
 
 jobs:
   sonarcloud:
-    name: Run SonarCloud analysis
+    name: Analyze with SonarCloud
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Asegúrate de estar usando la última versión de checkout
+      # Paso 1: Checkout del código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'   # Especifica la distribución (temurin es la opción recomendada)
-        architecture: 'x64'
-        check-latest: false
-        server-id: 'github'
-        server-username: ${{ github.actor }}
-        server-password: ${{ secrets.GITHUB_TOKEN }}
-        overwrite-settings: true
-        job-status: 'success'
+      # Paso 2: Ejecutar el escaneo de SonarCloud
+      - name: Run SonarCloud scan
+        uses: sonarsource/sonarcloud-github-action@v1
+        with:
+          entryPoint: "sonar-scanner"
+          args: "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    - name: Install Java 11 (if not already installed)
-      run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-11-jdk
-          
-    - name: Set JAVA_HOME and update PATH
-      run: |
-          echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
-          echo "/usr/lib/jvm/java-11-openjdk-amd64/bin" >> $GITHUB_PATH
-
-      # 5. Verificar la instalación de Java
-    - name: Verify Java installation
-      run: java -version
-      
-    - name: Cache SonarCloud dependencies
-      uses: actions/cache@v3  # Usamos la versión más reciente de actions/cache
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar-cache-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-sonar-cache-
-
-        # Paso 3: Escaneo con SonarCloud (Sin hacer build)
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@v1
-      with:
-        entryPoint: "sonar-scanner"
-        args: "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
