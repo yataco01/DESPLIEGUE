@@ -29,6 +29,6 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@v5
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-project-key: your_project_key # Reemplaza por tu project key
-          sonar-organization: your_organization_key # Reemplaza por tu organización en SonarCloud
+          sonar-project-key: Sonarscan # Reemplaza por tu project key
+          sonar-organization: yataco01 # Reemplaza por tu organización en SonarCloud
 
