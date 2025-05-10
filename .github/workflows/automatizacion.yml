@@ -24,17 +24,34 @@ jobs:
         with:
           fetch-depth: 0 # Necesario para análisis completo de historial
 
-      - name: SonarCloud Scan
+      # Configura el entorno (por ejemplo, Java para proyectos Java)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: SonarCloud Scan with Debug
         uses: SonarSource/sonarcloud-github-action@v3.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
         with:
           args: >
-            -Dsonar.projectKey=yataco01/Sonarscan
+            -X
+            -Dsonar.projectKey=tu-proyecto
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.scm.revision=${{ github.sha }}
+
+      - name: Upload SonarCloud Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud-logs
+          path: |
+            .scannerwork/*
+            sonar.log
 
       - name: Upload SonarCloud Report
         if: always()
