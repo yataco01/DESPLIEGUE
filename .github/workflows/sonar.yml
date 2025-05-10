@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Usamos la última versión de checkout
+      uses: actions/checkout@v3  # Asegúrate de estar usando la última versión de checkout
 
     - name: Set up JDK 11
       uses: actions/setup-java@v2
@@ -23,7 +23,7 @@ jobs:
         java-version: '11'
 
     - name: Cache SonarCloud dependencies
-      uses: actions/cache@v2  # Asegúrate de usar v2 o la versión más reciente
+      uses: actions/cache@v3  # Usamos la versión más reciente de actions/cache
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar-cache-${{ hashFiles('**/pom.xml') }}
@@ -36,9 +36,9 @@ jobs:
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@v1
       with:
-        organization: 'my-organization'  # Reemplaza con tu organización
-        projectKey: 'my-project-key'    # Reemplaza con tu clave de proyecto
+        organization: 'my-organization'  # Reemplaza con tu organización de SonarCloud
+        projectKey: 'my-project-key'    # Reemplaza con tu clave de proyecto de SonarCloud
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Asegúrate de agregar tu token en Secrets
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Agrega tu token en los secretos
 
 
