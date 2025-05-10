@@ -23,8 +23,7 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@v1
         with:
           entryPoint: "sonar-scanner"
-          args: "-Dsonar.login=${{ secrets.SONAR_TOKEN }}"
+          args: "-X -Dsonar.login=${{ secrets.SONAR_TOKEN }}"
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
 
