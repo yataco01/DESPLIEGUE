@@ -31,7 +31,7 @@ jobs:
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
         with:
           args: >
-            -Dsonar.projectKey=tu-proyecto
+            -Dsonar.projectKey=yataco01/Sonarscan
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.scm.revision=${{ github.sha }}
