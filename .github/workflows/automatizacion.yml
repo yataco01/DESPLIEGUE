@@ -20,32 +20,33 @@ jobs:
     name: SonarQube Scan
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Required for SonarQube to analyze full history
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Required for SonarQube to analyze full history
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18' # Juice Shop requires Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18' # Juice Shop requires Node.js
 
-      - name: Install SonarQube Scanner
-        run: |
-          npm install -g sonarqube-scanner
-          sonar-scanner --version
+    - name: Install SonarQube Scanner
+      run: |
+        npm install -g sonarqube-scanner
+        sonar-scanner --version
 
-      - name: Run SonarQube Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=juice-shop \
-            -Dsonar.projectName="Juice Shop" \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.sources=. \
-            -Dsonar.exclusions="**/node_modules/**,**/test/**" \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-        continue-on-error: false # Fail the job if SonarQube scan fails
+    - name: Run SonarQube Scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: https://sonarcloud.io # Hardcoded since you're using SonarCloud
+      run: |
+        sonar-scanner \
+          -Dsonar.projectKey=juice-shop \
+          -Dsonar.projectName="Juice Shop" \
+          -Dsonar.organization=<your-organization-key> \ # Replace with your SonarCloud organization key
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.token=$SONAR_TOKEN \
+          -Dsonar.sources=. \
+          -Dsonar.exclusions="**/node_modules/**,**/test/**" \
+          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+      continue-on-error: false # Fail the job if SonarQube scan fails
