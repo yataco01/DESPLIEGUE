@@ -38,12 +38,12 @@ jobs:
     - name: Run SonarQube Scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: https://sonarcloud.io # Hardcoded since you're using SonarCloud
+        SONAR_HOST_URL: https://sonarcloud.io
       run: |
         sonar-scanner \
           -Dsonar.projectKey=juice-shop \
           -Dsonar.projectName="Juice Shop" \
-          -Dsonar.organization=<your-organization-key> \ # Replace with your SonarCloud organization key
+          -Dsonar.organization=your-actual-organization-key \ # Replace with your SonarCloud organization key
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.token=$SONAR_TOKEN \
           -Dsonar.sources=. \
